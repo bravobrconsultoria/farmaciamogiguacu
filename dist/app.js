@@ -3,7 +3,6 @@ const whatsapp='https://wa.me/5519974018572';
 const defaultMessage='Olá! Gostaria de falar com a equipe da Farmácia Mogi Guaçu.';
 const waLink=message=>`${whatsapp}?text=${encodeURIComponent(message||defaultMessage)}`;
 document.querySelectorAll('[data-wa]').forEach(a=>{a.href=waLink(a.dataset.wa);a.target='_blank';a.rel='noopener noreferrer'});
-const maps='https://www.google.com/maps/search/?api=1&query=Drogaria+Mogi+Gua%C3%A7u%2C+Rua+Mogi+Gua%C3%A7u+1657%2C+Campinas&query_place_id=ChIJ68zHqmLPyJQRw_E6bGgGzA0';
 // Coordenadas do endereço fornecido; não depende de API de mapas.
 document.querySelectorAll('.maps-link').forEach(a=>a.href='https://www.google.com/maps/dir/?api=1&destination=-22.8820574,-47.0328205');
 const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#navigation');
