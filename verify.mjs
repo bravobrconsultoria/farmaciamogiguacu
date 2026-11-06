@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {groups,products} from './dist/products.js';
+assert.equal(products.length,200,'O catálogo precisa conter 200 itens');
+assert.equal(new Set(products.map(p=>p.name)).size,200,'Os produtos devem ser únicos');
+assert.equal(Object.keys(groups).length,10);
+for(const names of Object.values(groups))assert.equal(names.length,20);
+const html=fs.readFileSync('dist/index.html','utf8');
+for(const match of html.matchAll(/(?:src|href)="((?:assets\/)[^"]+)"/g))assert.ok(fs.existsSync('dist/'+match[1]),'Asset ausente: '+match[1]);
+for(const match of html.matchAll(/href="#([^"]+)"/g))assert.ok(html.includes(`id="${match[1]}"`),'Âncora ausente: '+match[1]);
+const structured=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+assert.equal(structured.telephone,'+55-19-3255-1389');assert.equal(structured.address.addressLocality,'Campinas');
+assert.equal(structured.openingHoursSpecification.length,3);
+assert.ok(fs.readFileSync('dist/app.js','utf8').includes('5519974018572'));
+console.log('OK: 200 produtos únicos, 10 categorias, imagens e âncoras locais, contatos e horários.');
