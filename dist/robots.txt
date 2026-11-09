@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://farmacia-mogi-guacu-campinas.bravobrvistos.chatgpt.site/sitemap.xml

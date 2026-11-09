@@ -1,1 +1,1 @@
-{"name":"farmacia-mogi-guacu","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node server.mjs","check":"node verify.mjs"}}
+{"name":"farmacia-mogi-guacu","version":"2.0.0","private":true,"type":"module","scripts":{"build":"node build.mjs","dev":"node build.mjs && node server.mjs","check":"node verify.mjs"}}

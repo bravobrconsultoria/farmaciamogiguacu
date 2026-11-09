@@ -1,29 +1,45 @@
 # Farmácia Mogi Guaçu
 
-Site institucional estático, responsivo, com catálogo de 200 itens, busca, 10 categorias e consulta por WhatsApp. Não possui checkout nem cadastro.
+Site institucional multipágina, com 17 URLs, catálogo de 200 itens, vídeo da loja, galeria manual e atendimento pelo WhatsApp. Sem checkout ou cadastro. HTML gerado no build; busca e paginação são melhorias progressivas.
 
-## Executar
+## Desenvolvimento
 
-Use `npm run dev` e abra http://127.0.0.1:4173. Para verificar conteúdo e arquivos, use `npm run check`.
+- `npm run build`: gera páginas, sitemap e robots.
+- `npm run dev`: gera e serve em http://127.0.0.1:4173.
+- `npm run check`: verifica páginas, links, assets, metadados, produtos e dados estruturados.
+- `PORT=4175` altera a porta do servidor (no PowerShell: `$env:PORT='4175'`).
 
-O site distribuível está em `dist/`. Não há dependências de build. As fontes do Google têm fallback para Arial.
+Não há dependências npm. Node.js é suficiente. Publicar o conteúdo de `dist/` em hospedagem estática com suporte a `index.html` nas subpastas.
 
-## Conteúdo
+## Editar conteúdo
 
-- Produtos: `dist/products.js` (10 categorias, 20 itens cada).
-- Textos, endereço, horários e metadados: `dist/index.html`.
-- Número do WhatsApp, filtros, paginação e mensagens: `dist/app.js`.
-- Visual e responsividade: `dist/styles.css`.
-- Imagens: cópias otimizadas das fotos fornecidas, em `dist/assets/`. Os originais foram preservados na pasta superior.
+- `build.mjs`: textos, páginas, navegação, links, dados institucionais e SEO. Edite aqui e execute o build; não edite HTML gerado diretamente.
+- `dist/products.js`: nomes dos 200 itens em 10 categorias.
+- `dist/styles.css`: identidade visual, componentes e responsividade.
+- `dist/app.js`: menu móvel, busca, paginação, galeria e mapa sob demanda.
+- `dist/assets/`: imagens, ícones e vídeo local.
+- `DESIGN.md`: decisões e aplicação das skills solicitadas.
 
-## Critério do catálogo
+## URLs
 
-Seleção editorial de tipos de produtos de higiene, beleza e cuidados pessoais, orientada pelas categorias de maior procura citadas pela Farmarcas (27/05/2025): https://www.farmarcas.com.br/produtos-de-perfumaria-farmacia/
+`/`, `/produtos/`, `/produtos/<categoria>/`, `/nossa-loja/`, `/entregas/`, `/contato/`, `/duvidas/`, `/privacidade/`. `pages.json` contém a lista gerada. Página de erro em `/404.html`.
 
-Não foi localizado um ranking público verificável dos 200 produtos mais vendidos. Por isso o site não apresenta essa seleção como ranking, não atribui números de vendas e não promete estoque. Não são SKUs confirmados da loja. Marcas, apresentações, preços e disponibilidade são consultados pelo WhatsApp.
+## Domínio e indexação futura
 
-Medicamentos sob prescrição não integram a vitrine promocional. Referência Anvisa: https://bibliotecadigital.anvisa.gov.br/jspui/bitstream/anvisa/170/1/Consumo%20e%20sa%C3%BAde_venda%20de%20medicamentos%20pela%20internet.pdf
+`SITE_URL` define a origem das URLs canônicas, Open Graph, JSON-LD e sitemap. Exemplo PowerShell: `$env:SITE_URL='https://www.seudominio.com.br'; npm run build`.
 
-Dados institucionais, fundação, contatos, horários e área de entrega foram fornecidos pelo responsável pelo projeto. Horários de feriados não foram informados; o site orienta consultar a equipe. Não há promessa de entrega no dia seguinte nem informação sobre taxa ou pedido mínimo.
+A hospedagem Sites continua com acesso privado. Para indexação, será necessário disponibilizar o site publicamente, configurar o domínio final e enviar o sitemap ao Google Search Console. O sitemap ajuda na descoberta; não garante indexação ou posição.
 
-O site não implementa rastreamento ou cookies de publicidade. Os botões externos levam a serviços com suas próprias políticas.
+## Conteúdo e fontes
+
+Endereço, fundação em 03/05/2005, contatos, horários e área de entrega foram fornecidos pelo responsável pelo projeto. Fotos e vídeo são arquivos originais fornecidos, com cópias otimizadas. A logo do cabeçalho é a original; o símbolo quadrado é usado como favicon.
+
+O catálogo é uma seleção editorial de tipos de produtos; não é ranking verificado de vendas e não garante estoque, marcas ou apresentações. Base de categorias: https://www.farmarcas.com.br/produtos-de-perfumaria-farmacia/. Medicamentos sob prescrição não integram a vitrine promocional. Não há promessa de entrega no dia seguinte nem taxa ou pedido mínimo inventados.
+
+Ícone WhatsApp: Simple Icons v15 (CC0). Fontes: Google Fonts. Não há analytics ou rastreamento publicitário adicionado; o mapa Google é carregado somente mediante clique.
+
+## GitHub
+
+Repositório: https://github.com/bravobrconsultoria/farmaciamogiguacu
+
+Autoria configurada localmente: Gabriel Giovanini, `170587353+gabriel-giovanini@users.noreply.github.com`, vinculada a `gabriel-giovanini`. A cópia `site-publicacao`, fora deste checkout, mantém o histórico da hospedagem Sites separado do histórico corrigido no GitHub.

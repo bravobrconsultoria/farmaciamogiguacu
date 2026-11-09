@@ -1,15 +1,20 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {groups,products} from './dist/products.js';
-assert.equal(products.length,200,'O catálogo precisa conter 200 itens');
-assert.equal(new Set(products.map(p=>p.name)).size,200,'Os produtos devem ser únicos');
-assert.equal(Object.keys(groups).length,10);
-for(const names of Object.values(groups))assert.equal(names.length,20);
-const html=fs.readFileSync('dist/index.html','utf8');
-for(const match of html.matchAll(/(?:src|href)="((?:assets\/)[^"]+)"/g))assert.ok(fs.existsSync('dist/'+match[1]),'Asset ausente: '+match[1]);
-for(const match of html.matchAll(/href="#([^"]+)"/g))assert.ok(html.includes(`id="${match[1]}"`),'Âncora ausente: '+match[1]);
-const structured=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
-assert.equal(structured.telephone,'+55-19-3255-1389');assert.equal(structured.address.addressLocality,'Campinas');
-assert.equal(structured.openingHoursSpecification.length,3);
-assert.ok(fs.readFileSync('dist/app.js','utf8').includes('5519974018572'));
-console.log('OK: 200 produtos únicos, 10 categorias, imagens e âncoras locais, contatos e horários.');
+import path from 'node:path';
+import {products} from './dist/products.js';
+const pages=JSON.parse(fs.readFileSync('pages.json','utf8'));
+assert.equal(pages.length,17);assert.equal(products.length,200);assert.equal(new Set(products.map(p=>p.name)).size,200);
+const titles=new Set(),descriptions=new Set();let checkedLinks=0;
+for(const {url,file} of [...pages,{url:'/404.html',file:'404.html'}]){
+ const html=fs.readFileSync('dist/'+file,'utf8');
+ assert.equal((html.match(/<h1[ >]/g)||[]).length,1,`H1: ${url}`);
+ const title=html.match(/<title>(.*?)<\/title>/)[1],desc=html.match(/name="description" content="([^"]+)"/)[1];assert(!titles.has(title));assert(!descriptions.has(desc));titles.add(title);descriptions.add(desc);
+ assert(html.includes('rel="canonical"'));assert(html.includes('href="/assets/simbolo.png"'));assert(html.includes('src="/assets/logo.png"'));assert(!html.includes('A SUA FARMÁCIA DE BAIRRO'));assert(!html.includes('class="topbar"'));
+ for(const m of html.matchAll(/(?:src|href|poster)="(\/[^"#?]*)"/g)){const target=m[1].endsWith('/')?m[1]+'index.html':m[1];assert(fs.existsSync(path.join('dist',target)),`${url}: ${target}`);checkedLinks++}
+ for(const m of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g))JSON.parse(m[1]);
+ const expected=url==='/produtos/'?200:url.startsWith('/produtos/')?20:0;
+ assert.equal((html.match(/class="product-card"/g)||[]).length,expected,`Produtos pré-renderizados: ${url}`);
+}
+const sitemap=fs.readFileSync('dist/sitemap.xml','utf8');assert.equal((sitemap.match(/<loc>/g)||[]).length,17);
+assert(fs.statSync('dist/assets/nossa-loja.mp4').size<15_000_000);
+console.log(`OK: ${pages.length} páginas, metadados únicos, 200 produtos pré-renderizados, ${checkedLinks} links/arquivos locais, sitemap, favicon e vídeo.`);

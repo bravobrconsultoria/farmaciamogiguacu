@@ -1,55 +1,25 @@
-import {groups,products} from './products.js';
-const whatsapp='https://wa.me/5519974018572';
-const defaultMessage='Olá! Gostaria de falar com a equipe da Farmácia Mogi Guaçu.';
-const waLink=message=>`${whatsapp}?text=${encodeURIComponent(message||defaultMessage)}`;
-document.querySelectorAll('[data-wa]').forEach(a=>{a.href=waLink(a.dataset.wa);a.target='_blank';a.rel='noopener noreferrer'});
-// Coordenadas do endereço fornecido; não depende de API de mapas.
-document.querySelectorAll('.maps-link').forEach(a=>a.href='https://www.google.com/maps/dir/?api=1&destination=-22.8820574,-47.0328205');
-const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#navigation');
-function closeMenu(){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Abrir menu');menu.textContent='☰'}
-menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Fechar menu':'Abrir menu');menu.textContent=open?'×':'☰'});
+const menu=document.querySelector('.menu-button'),nav=document.querySelector('#main-nav');
+function closeMenu(){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Abrir menu')}
+menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Fechar menu':'Abrir menu')});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&nav.classList.contains('open')){closeMenu();menu.focus()}});
 nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
-const search=document.querySelector('#search'),select=document.querySelector('#category'),grid=document.querySelector('#product-grid');
-const normalize=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-Object.keys(groups).forEach(category=>{const option=document.createElement('option');option.value=category;option.textContent=category;select.append(option)});
-const icons={
- 'Higiene diária':'M8 8h8v13H8z M10 8V4h4v4 M12 4V2h5 M9 13h6',
- 'Saúde bucal':'M8 2v7a3 3 0 0 0 6 0V2 M8 4h6 M8 7h6 M11 12v10',
- 'Cabelos':'M8 7h8l1 14H7L8 7z M10 7V3h4v4 M9 12h6 M9 16h6',
- 'Cuidados com a pele':'M8 3h8l-1 15H9L8 3z M9 18h6v3H9z M10 8h4 M10 11h4',
- 'Corpo e proteção solar':'M12 3v2 M12 19v2 M3 12h2 M19 12h2 M5 5l2 2 M17 17l2 2 M5 19l2-2 M17 7l2-2 M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
- 'Bebê e criança':'M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0 M8 11h.1 M16 11h.1 M9 15q3 3 6 0 M12 4q-3 5 1 4',
- 'Cuidados íntimos':'M12 20S3 14 3 8a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-9 12-9 12z',
- 'Beleza e perfumaria':'M7 10h10v11H7z M10 10V7h4v3 M10 7V2l4 2v3 M7 17h10',
- 'Barbear e acessórios':'M5 3h14v5H5z M7 5h10 M10 8v13h4V8',
- 'Cuidados em casa':'M8 4h8v3h5v14H3V7h5V4z M12 10v8 M8 14h8'
-};
-let page=1;const perPage=12;
-function render(){
- const query=normalize(search.value.trim());
- const filtered=products.filter(p=>(!select.value||p.category===select.value)&&normalize(p.name+' '+p.category).includes(query));
- const pages=Math.max(1,Math.ceil(filtered.length/perPage));page=Math.min(page,pages);
- grid.replaceChildren();
- filtered.slice((page-1)*perPage,page*perPage).forEach(p=>{
-  const card=document.createElement('article');card.className='product-card';
-  const icon=document.createElement('div');icon.className='product-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=`<svg viewBox="0 0 24 24"><path d="${icons[p.category]}"/></svg>`;
-  const category=document.createElement('span');category.className='category';category.textContent=p.category;
-  const name=document.createElement('h4');name.textContent=p.name;
-  const link=document.createElement('a');link.href=waLink(`Olá! Gostaria de consultar a disponibilidade de: ${p.name}.`);link.target='_blank';link.rel='noopener noreferrer';link.setAttribute('aria-label',`Consultar ${p.name} pelo WhatsApp`);link.innerHTML='Consultar no WhatsApp <span aria-hidden="true">↗</span>';
-  card.append(icon,category,name,link);grid.append(card);
- });
- if(!filtered.length){const empty=document.createElement('div');empty.className='empty';empty.innerHTML='<h4>Vamos encontrar juntos?</h4><p>Não encontramos esse termo na seleção. Consulte outros produtos com a nossa equipe.</p>';const a=document.createElement('a');a.className='button';a.textContent='Perguntar no WhatsApp ↗';a.href=waLink(`Olá! Estou procurando: ${search.value.trim()||'outros produtos'}. Vocês podem me ajudar?`);a.target='_blank';a.rel='noopener noreferrer';empty.append(a);grid.append(empty)}
- document.querySelector('#result-count').textContent=filtered.length?`Mostrando ${(page-1)*perPage+1}–${Math.min(page*perPage,filtered.length)} de ${filtered.length} produtos`:'Nenhum produto encontrado';
- document.querySelector('#page-status').textContent=`Página ${page} de ${pages}`;
- document.querySelector('#previous').disabled=page===1;document.querySelector('#next').disabled=page===pages;
- document.querySelector('.pagination').hidden=!filtered.length;
- document.querySelectorAll('[data-filter]').forEach(b=>{const active=b.dataset.filter===select.value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+document.addEventListener('click',event=>{if(!event.target.closest('.site-header'))closeMenu()});
+const reduce=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const search=document.querySelector('#product-search');
+if(search){
+ const cards=[...document.querySelectorAll('.product-card')],prev=document.querySelector('[data-prev]'),next=document.querySelector('[data-next]'),pagination=document.querySelector('.pagination'),clear=document.querySelector('[data-clear-search]');
+ const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();let page=1;const size=12;
+ function render(){const q=norm(search.value.trim());const filtered=cards.filter(c=>norm(c.dataset.name+' '+c.dataset.category).includes(q));const total=Math.max(1,Math.ceil(filtered.length/size));page=Math.min(page,total);const visible=new Set(filtered.slice((page-1)*size,page*size));cards.forEach(c=>c.hidden=!visible.has(c));document.querySelector('#result-count').textContent=filtered.length?`${(page-1)*size+1}–${Math.min(page*size,filtered.length)} de ${filtered.length} produtos`:'Nenhum resultado para esta busca';document.querySelector('[data-page]').textContent=`${page} / ${total}`;prev.disabled=page===1;next.disabled=page===total;pagination.hidden=total<=1;document.querySelector('.empty-results').hidden=filtered.length>0;document.querySelector('.product-grid').hidden=!filtered.length;clear.hidden=!search.value;}
+ search.addEventListener('input',()=>{page=1;render()});clear.addEventListener('click',()=>{search.value='';page=1;render();search.focus()});
+ for(const [button,step] of [[prev,-1],[next,1]])button.addEventListener('click',()=>{page+=step;render();document.querySelector('[data-catalog]').scrollIntoView({behavior:reduce()?'instant':'smooth',block:'start'});search.focus({preventScroll:true})});
+ render();
 }
-search.addEventListener('input',()=>{page=1;render()});select.addEventListener('change',()=>{page=1;render()});
-document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{select.value=b.dataset.filter;page=1;render()}));
-document.querySelectorAll('[data-category]').forEach(a=>a.addEventListener('click',()=>{select.value=a.dataset.category;search.value='';page=1;render()}));
-for(const [id,step] of [['previous',-1],['next',1]])document.getElementById(id).addEventListener('click',()=>{page+=step;render();document.querySelector('#catalogo').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'})});
-render();
-document.querySelector('#year').textContent=new Date().getFullYear();
-const privacy=document.querySelector('#privacy');document.querySelector('#privacy-open').addEventListener('click',()=>privacy.showModal());document.querySelector('#privacy-close').addEventListener('click',()=>privacy.close());privacy.addEventListener('click',e=>{if(e.target===privacy){const r=privacy.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)privacy.close()}});
+const track=document.querySelector('.gallery-track');
+if(track){
+ const slides=[...track.querySelectorAll('.gallery-slide')],prev=document.querySelector('[data-gallery-prev]'),next=document.querySelector('[data-gallery-next]'),status=document.querySelector('[data-gallery-status]');let current=0,ticking=false;
+ function update(){const left=track.getBoundingClientRect().left;let best=Infinity;slides.forEach((slide,i)=>{const distance=Math.abs(slide.getBoundingClientRect().left-left);if(distance<best){best=distance;current=i}});if(track.scrollLeft+track.clientWidth>=track.scrollWidth-3)current=slides.length-1;status.textContent=`${current+1} / ${slides.length}`;prev.disabled=track.scrollLeft<3;next.disabled=track.scrollLeft+track.clientWidth>=track.scrollWidth-3;}
+ function move(delta){const index=Math.max(0,Math.min(slides.length-1,current+delta));const x=slides[index].getBoundingClientRect().left-track.getBoundingClientRect().left+track.scrollLeft;track.scrollTo({left:x,behavior:reduce()?'instant':'smooth'})}
+ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));track.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();move(e.key==='ArrowRight'?1:-1)}});track.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{update();ticking=false});ticking=true}},{passive:true});window.addEventListener('resize',update);update();
+}
+document.querySelector('[data-load-map]')?.addEventListener('click',()=>{const frame=document.createElement('iframe');frame.src='https://www.google.com/maps?q=-22.8820574,-47.0328205&z=16&output=embed';frame.title='Localização da Farmácia Mogi Guaçu no Google Maps';frame.loading='lazy';frame.referrerPolicy='no-referrer-when-downgrade';frame.allowFullscreen=true;document.querySelector('[data-map]').replaceChildren(frame)});
+document.querySelectorAll('video').forEach(video=>{video.addEventListener('error',()=>{const note=document.createElement('p');note.className='small-note';note.textContent='Não foi possível carregar o vídeo. Você pode conhecer a loja pelas fotos abaixo.';video.after(note)},{once:true})});
