@@ -26,9 +26,9 @@ Não há dependências npm. Node.js é suficiente. Publicar o conteúdo de `dist
 
 ## Domínio e indexação futura
 
-`SITE_URL` define a origem das URLs canônicas, Open Graph, JSON-LD e sitemap. Exemplo PowerShell: `$env:SITE_URL='https://www.seudominio.com.br'; npm run build`.
+`SITE_URL` define a origem das URLs canônicas, Open Graph, JSON-LD e sitemap. Exemplo PowerShell: `$env:SITE_URL='https://farmamogiguacu.com.br'; npm run build`.
 
-A hospedagem Sites continua com acesso privado. Para indexação, será necessário disponibilizar o site publicamente, configurar o domínio final e enviar o sitemap ao Google Search Console. O sitemap ajuda na descoberta; não garante indexação ou posição.
+Domínio definitivo: https://farmamogiguacu.com.br (padrão do build). A publicação será feita pela empresa de hospedagem a partir da branch main do GitHub. Consulte PUBLICACAO.md para build, DNS, HTTPS, redirecionamentos, cache, 404 e validação. Após o lançamento, enviar o sitemap ao Google Search Console. A configuração externa ainda precisa ser executada e validada.
 
 ## Conteúdo e fontes
 
