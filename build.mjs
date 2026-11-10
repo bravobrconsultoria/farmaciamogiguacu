@@ -8,7 +8,7 @@ const origin=(process.env.SITE_URL||'https://farmamogiguacu.com.br').replace(/\/
 const out='dist';
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const slug=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const wa=m=>'https://wa.me/5519974018572?text='+encodeURIComponent(m||'Olá! Gostaria de falar com a Farmácia Mogi Guaçu.');
+const wa=m=>'https://wa.me/5519974018572?text='+encodeURIComponent('Olá! Vim pelo site. '+(m||'Gostaria de falar com a Farmácia Mogi Guaçu.').replace(/^Olá!\s*/i,''));
 const arrow='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
 const whatsappPaths=fs.readFileSync('dist/assets/whatsapp.svg','utf8').replace(/<svg[^>]*>|<\/svg>|<title>.*?<\/title>/g,'');
 const whatsappSprite=`<svg width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden"><defs><symbol id="whatsapp-icon" viewBox="0 0 24 24">${whatsappPaths}</symbol></defs></svg>`;
