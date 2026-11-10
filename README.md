@@ -1,6 +1,6 @@
 # Farmácia Mogi Guaçu
 
-Site institucional multipágina, com 17 URLs, catálogo de 200 itens, vídeo da loja, galeria manual e atendimento pelo WhatsApp. Sem checkout ou cadastro. HTML gerado no build; busca e paginação são melhorias progressivas.
+Site institucional multipágina, com 17 URLs, catálogo de 1037 itens, vídeo da loja, galeria manual e atendimento pelo WhatsApp. Sem checkout ou cadastro. HTML gerado no build; busca e paginação são melhorias progressivas.
 
 ## Desenvolvimento
 
@@ -14,7 +14,7 @@ Não há dependências npm. Node.js é suficiente. Publicar o conteúdo de `dist
 ## Editar conteúdo
 
 - `build.mjs`: textos, páginas, navegação, links, dados institucionais e SEO. Edite aqui e execute o build; não edite HTML gerado diretamente.
-- `dist/products.js`: nomes dos 200 itens em 10 categorias.
+- `dist/products.js`: nomes dos 1037 itens em 10 categorias.
 - `dist/styles.css`: identidade visual, componentes e responsividade.
 - `dist/app.js`: menu móvel, busca, paginação, galeria e mapa sob demanda.
 - `dist/assets/`: imagens, ícones e vídeo local.
@@ -43,3 +43,5 @@ O catálogo é uma seleção editorial de tipos de produtos; não é ranking ver
 Repositório: https://github.com/bravobrconsultoria/farmaciamogiguacu
 
 Autoria configurada localmente: Gabriel Giovanini, `170587353+gabriel-giovanini@users.noreply.github.com`, vinculada a `gabriel-giovanini`. A cópia `site-publicacao`, fora deste checkout, mantém o histórico da hospedagem Sites separado do histórico corrigido no GitHub.
+
+Catálogo: tipos e apresentações genéricas, não SKUs confirmados. Quantidades editoriais por categoria, sem ranking individual ou promessa de estoque. Edite catalog-source.mjs e execute node generate-catalog.mjs antes do build. Há 1037 nomes únicos, incluindo variações de tamanho, formato e embalagem.
