@@ -20,13 +20,13 @@ const shapes={
  makeup:'M16 4a12 12 0 1 0 0 24 12 12 0 0 0 0-24Z M16 8a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z M14 28h4',
  razor:'M5 4h22v8H5z M8 8h16 M13 12h6l-1 17h-4z',
  bandage:'M7 3 29 25l-4 4L3 7z M11 13l8 8 4-4-8-8z M7 7h.01 M25 25h.01',
- thermometer:'M13 21V5a3 3 0 0 1 6 0v16a6 6 0 1 1-6 0Z M16 11v13 M23 7h4 M23 12h4 M23 17h4',
+ thermometer:'M12 19V6a3 3 0 0 1 6 0v13a5 5 0 1 1-6 0Z M15 10v13 M15 22a2 2 0 1 0 0 4 2 2 0 0 0 0-4 M22 7h4 M22 12h3 M22 17h4',
  cotton:'M10 8a5 5 0 0 1 10-1 6 6 0 0 1 6 10 7 7 0 0 1-10 10A7 7 0 0 1 6 17a6 6 0 0 1 4-9Z',
  scissors:'M9 18a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z M23 18a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z M12 19 24 3 M20 19 8 3',
  box:'M4 10 16 4l12 6v16H4z M4 10h24 M16 10v16 M12 18h8',
  baby:'M12 3h8v5l3 4v17H9V12l3-4z M9 15h14 M18 19h5 M18 23h5',
  floss:'M8 9h16v19H8z M8 9V6h16v3 M12 18h8 M16 9V5l10-2',
- mask:'M7 9h18v14l-9 5-9-5z M7 12H3v9h4 M25 12h4v9h-4 M11 14h10 M11 18h10',
+ mask:'M7 9Q16 6 25 9v12Q16 27 7 21Z M7 11H5c-4 0-4 10 0 10h2 M25 11h2c4 0 4 10 0 10h-2 M11 12h10 M10 16h12 M11 20h10',
  perfume:'M12 3h8v5h-8z M15 8v4 M8 12h16v17H8z M12 18h8v6h-8z'
 };
 export const productSprite=`<svg xmlns="http://www.w3.org/2000/svg">${Object.entries(shapes).map(([id,d])=>`<symbol id="${id}" viewBox="0 0 32 32"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>`).join('')}</svg>`;
