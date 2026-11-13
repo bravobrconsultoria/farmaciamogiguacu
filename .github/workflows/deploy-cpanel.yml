@@ -1,0 +1,66 @@
+name: Publicar no cPanel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cpanel-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Ativar somente depois de cadastrar e conferir o acesso SSH.
+    if: vars.CPANEL_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SSH_HOST: ${{ secrets.CPANEL_SSH_HOST }}
+      SSH_PORT: ${{ secrets.CPANEL_SSH_PORT }}
+      SSH_KEY: ${{ secrets.CPANEL_SSH_KEY }}
+      SSH_PASSPHRASE: ${{ secrets.CPANEL_SSH_PASSPHRASE }}
+      SSH_KNOWN_HOSTS: ${{ secrets.CPANEL_SSH_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Gerar e verificar site
+        run: |
+          node build.mjs
+          node verify.mjs
+      - name: Publicar arquivos por SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${SSH_HOST:?Cadastre CPANEL_SSH_HOST nos Secrets}"
+          : "${SSH_PORT:?Cadastre CPANEL_SSH_PORT nos Secrets}"
+          : "${SSH_KEY:?Cadastre CPANEL_SSH_KEY nos Secrets}"
+          : "${SSH_KNOWN_HOSTS:?Cadastre a chave pública verificada do servidor em CPANEL_SSH_KNOWN_HOSTS}"
+          [[ "$SSH_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+          [[ "$SSH_PORT" =~ ^[0-9]+$ ]] && ((SSH_PORT > 0 && SSH_PORT < 65536))
+          umask 077
+          auth_dir=$(mktemp -d)
+          cleanup() { ssh-agent -k >/dev/null 2>&1 || true; rm -rf -- "$auth_dir"; }
+          trap cleanup EXIT
+          printf '%s\n' "$SSH_KEY" > "$auth_dir/key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$auth_dir/known_hosts"
+          printf '#!/bin/sh\nprintf "%%s\\n" "$SSH_PASSPHRASE"\n' > "$auth_dir/askpass"
+          chmod 700 "$auth_dir/askpass"
+          eval "$(ssh-agent -s)" >/dev/null
+          export SSH_ASKPASS="$auth_dir/askpass" SSH_ASKPASS_REQUIRE=force DISPLAY=:0
+          ssh-add "$auth_dir/key" </dev/null
+          connection=(-i "$auth_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$auth_dir/known_hosts" -o ConnectTimeout=20)
+          target="farmamogiguacu@$SSH_HOST"
+          archive="/home/farmamogiguacu/.site-deploy-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          tar -czf "$auth_dir/site.tar.gz" -C dist .
+          ssh -p "$SSH_PORT" "${connection[@]}" "$target" 'test -d /home/farmamogiguacu/public_html && command -v tar >/dev/null'
+          scp -P "$SSH_PORT" "${connection[@]}" "$auth_dir/site.tar.gz" "$target:$archive"
+          ssh -p "$SSH_PORT" "${connection[@]}" "$target" "tar --no-same-owner --no-same-permissions -xzf '$archive' -C /home/farmamogiguacu/public_html && rm -f '$archive'"
+          echo 'Arquivos publicados em public_html.'
