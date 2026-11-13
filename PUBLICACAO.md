@@ -23,6 +23,14 @@ O domínio acima é o padrão de `build.mjs`. Se o ambiente definir `SITE_URL`, 
 
 ## Configurações da hospedagem
 
+### cPanel desta conta
+
+Repositório clonado em `/home/farmamogiguacu/repositories/farmaciamogiguacu` e raiz pública `/home/farmamogiguacu/public_html`. A configuração `.cpanel.yml` copia apenas o conteúdo de `dist/` para essa raiz, sem Node no servidor. Arquivos existentes com o mesmo nome serão substituídos; arquivos extras não serão removidos.
+
+Antes da primeira publicação, fazer backup da raiz pública fora de `public_html` e verificar arquivos antigos como `.htaccess`, `index.php` e `index.html`, que podem conter o redirecionamento para o Instadelivery. Preservar regras necessárias da hospedagem e remover somente o redirecionamento identificado. O deploy não remove automaticamente arquivos antigos nem altera o HTTPS do cPanel.
+
+No Git Version Control: Manage → Pull or Deploy → Update from Remote → conferir o commit → Deploy HEAD Commit. Isso publica o código do GitHub, mas não configura sincronização automática a cada push. A automação GitHub → cPanel ainda depende da configuração de acesso e de um mecanismo de deploy na hospedagem.
+
 ### Vercel
 
 O `vercel.json` fixa Framework Preset em Other, build com verificação e diretório público `dist`. O `server.mjs` é apenas para desenvolvimento local e não deve ser configurado como função ou ponto de entrada de produção.

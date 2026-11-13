@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - /usr/bin/test -f /home/farmamogiguacu/repositories/farmaciamogiguacu/dist/index.html
+    - /usr/bin/test -d /home/farmamogiguacu/public_html
+    - /bin/cp -R /home/farmamogiguacu/repositories/farmaciamogiguacu/dist/. /home/farmamogiguacu/public_html/
