@@ -56,11 +56,21 @@ jobs:
           eval "$(ssh-agent -s)" >/dev/null
           export SSH_ASKPASS="$auth_dir/askpass" SSH_ASKPASS_REQUIRE=force DISPLAY=:0
           ssh-add "$auth_dir/key" </dev/null
-          connection=(-i "$auth_dir/key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$auth_dir/known_hosts" -o ConnectTimeout=20)
+          # Selecionar explicitamente a identidade pública; o agente já desbloqueado assina.
+          ssh-add -L > "$auth_dir/key.pub"
+          echo 'Impressão digital da chave cadastrada no GitHub:'
+          ssh-keygen -lf "$auth_dir/key.pub"
+          connection=(-i "$auth_dir/key.pub" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$auth_dir/known_hosts" -o ConnectTimeout=20)
           target="farmamogiguacu@$SSH_HOST"
           archive="/home/farmamogiguacu/.site-deploy-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
           tar -czf "$auth_dir/site.tar.gz" -C dist .
-          ssh -p "$SSH_PORT" "${connection[@]}" "$target" 'test -d /home/farmamogiguacu/public_html && command -v tar >/dev/null'
+          if ssh -v -E "$auth_dir/connection.log" -p "$SSH_PORT" "${connection[@]}" "$target" 'test -d /home/farmamogiguacu/public_html && command -v tar >/dev/null'; then
+            echo 'Autenticação e diretório de publicação confirmados.'
+          else
+            echo '::error::Falha no acesso SSH. Diagnóstico de autenticação abaixo (sem chave privada):'
+            grep -E 'Offering public key|Server accepts key|Authentications that can continue|Authenticated to|sign_and_send_pubkey|send_pubkey_test|no mutual|Permission denied|Load key|identity file|Exit status' "$auth_dir/connection.log" || true
+            exit 1
+          fi
           scp -P "$SSH_PORT" "${connection[@]}" "$auth_dir/site.tar.gz" "$target:$archive"
           ssh -p "$SSH_PORT" "${connection[@]}" "$target" "tar --no-same-owner --no-same-permissions -xzf '$archive' -C /home/farmamogiguacu/public_html && rm -f '$archive'"
           echo 'Arquivos publicados em public_html.'
