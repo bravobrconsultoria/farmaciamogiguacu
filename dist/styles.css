@@ -13,3 +13,5 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
 
 .product-illustration{display:flex;align-items:center;justify-content:center;width:100%;height:100px;margin-bottom:20px;background:#f2f5f7;color:var(--navy);border-radius:4px}.product-illustration svg{width:64px;height:64px;fill:none;stroke:none}.product-card:hover .product-illustration{color:var(--red)}@media(max-width:760px){.product-illustration{height:84px;margin-bottom:16px}.product-illustration svg{width:52px;height:52px}}
+
+img.facade-photo{object-position:50% 76%}
