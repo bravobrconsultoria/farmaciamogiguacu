@@ -23,6 +23,14 @@ O domínio acima é o padrão de `build.mjs`. Se o ambiente definir `SITE_URL`, 
 
 ## Configurações da hospedagem
 
+### Vercel
+
+O `vercel.json` fixa Framework Preset em Other, build com verificação e diretório público `dist`. O `server.mjs` é apenas para desenvolvimento local e não deve ser configurado como função ou ponto de entrada de produção.
+
+Importar a branch `main` com Root Directory na raiz do repositório (`./`), onde está `package.json`. Após atualizar o código, usar o novo deployment; redeploy de um commit antigo não inclui a correção. Se houver erro `FUNCTION_INVOCATION_FAILED`, conferir o commit, o preset efetivo e os logs: este projeto não precisa invocar funções para servir as páginas.
+
+### Demais requisitos
+
 - Configurar DNS conforme a infraestrutura da empresa e certificado HTTPS válido.
 - Redirecionar HTTP e `www.farmamogiguacu.com.br` para o domínio HTTPS sem `www`, preservando caminho e query string, com status 301 ou 308.
 - Servir os `index.html` das subpastas. Exemplo: `/produtos/cabelos/` deve abrir `dist/produtos/cabelos/index.html`.
